@@ -1,0 +1,73 @@
+{% load bootstrap4 %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=l, shrink-to-fit=no"> <!--Этот метатег,
+        необходим для того, чтобы Bootstrap правильно обработал страницу -->
+        <title>{% block title %}Главная{% endblock %} - Доска объявлений</title> <!-- Блок title будет выводить название страницы -->
+        {% bootstrap_css %} <!-- Привязываем к странице таблицы стилей Bootstrap -->
+        <link rel="stylesheet" type="text/css" href="{% static 'main/style.css' %}"> <!-- Привязываем таблицу стилей static\main\sty1e.css -->
+        {% bootstrap_javascript jquery='slim' %} <!-- Привязываем файлы веб-сценариев с программным кодом Bootstrap
+        вместе с сокращенной редакцией библиотеки jQuery, без которой не заработает созданное нами раскрывающееся меню -->
+    </head>
+    <body class="container-fluid"> <!-- К телу страницы (тегу <body>) привязываем стилевой класс container-fluid, как
+того требует Bootstrap -->
+        <header class="mb-4"> <!--Стилевой класс mb-4, привязанный к элементу страницы, установит у него достаточно
+        боЛЬШОЙ ВНеШНИЙ ОТСТуП СНИЗу. -->
+            <h1 class="display-1 text-center">0бъявления</h1> <!--СТИЛеВЫе КЛаССЫ display-1 И text-center,
+            привязанные к заголовку, предпишут веб-обозревателю вывести текст увеличенным шрифтом и выровнять его посередине; -->
+        </header>
+        <div class="row"> <!--класс row, привязанный к элементу страницы, вынуждает его вести себя как строка таблицы,-->
+            <ul class="col nav justify-content-end border"> <!-- стилевой класс col — как ячейка в этой строке
+            Стилевой класс justify-content-end укажет выровнять пункты полосы навигации по правому краю,
+            а стилевой класс border создаст рамку вокруг нее.-->
+                <li class="nav-item"><a class="nav-link" href="{% url 'main:register' %}">Регистрация</a></li>
+                {% if user.is_authenticated %}
+
+                <!--данный код создает в полосе навигации пункт с раскрывающимся меню-->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown"
+                       href="#" role="button" aria-haspopup="true" aria-expanded="false">Профиль</a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item" href="{% url 'main:profile' %}">Moи объявления</a>
+                        <a class="dropdown-item" href="{% url 'main:profile_change' %}">Изменить личные данные</a>
+                        <a class="dropdown-item" href="{% url 'main:password_change' %}">Изменить пароль</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{% url 'main:logout' %}">Выйти</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{% url 'main:profile_delete' %}">Удалить</a>
+                    </div>
+                </li>
+                {% else %}
+                <li class="nav-item"><a class="nav-link" href="{% url 'main:login' %}">Bxoд</a></li>
+                {% endif %}
+            </ul>
+        </div>
+        <div class="row">
+            <nav class="col-md-auto nav flex-column border">
+                <a class="nav-link root" href="{% url 'main:index' %}">Главная</a>
+
+                {% for rubric in rubrics %}
+                    {% ifchanged rubric.super_rubric.pk %}
+                    <span class="nav-link root front-weight-bold">
+                    {{ rubric.super_rubric.name }}</span>
+                    {% endifchanged %}
+                    <a class="nav-link" href="{% url 'main:by_rubric' pk=rubric.pk %}">
+                    {{ rubric.name }}</a>
+                {% endfor %}
+
+                <a class="nav-link root" href="{% url 'main:other' page='about' %}">О сайте</a>
+            </nav>
+            <section class="col border py-2">
+                {% bootstrap_messages %}
+                {% block content %}
+                {% endblock %}
+            </section>
+        </div>
+        <footer class="mt-3">
+            <p class="text-right font-italic">&copy; читатели.</p>
+        </footer>
+    </body>
+</html>
